@@ -1,6 +1,7 @@
 import User from "../models/User.js"
 import bcrypt from "bcrypt"
 import { generateToken } from "../utils/jwt.js"
+import { v2 as cloudinary } from "cloudinary"
 
 // Create User (after Stripe payment)
 export const createUser = async (req, res) => {
@@ -47,6 +48,11 @@ export const loginUser = async (req, res) => {
   }
 }
 
+//logout
+export const logoutUser = (req, res) => {
+  res.status(200).json({ message: "Logged out successfully" })
+}
+
 // Get My Profile
 export const getMyProfile = async (req, res) => {
   try {
@@ -61,14 +67,29 @@ export const getMyProfile = async (req, res) => {
 export const updateMyProfile = async (req, res) => {
   try {
     const updates = req.body
+    const userId = req.userId
+
+    // Handle image upload (base64)
+    if (updates.profilePic) {
+      const uploadRes = await cloudinary.uploader.upload(updates.profilePic, {
+        folder: "user-profile-pics",
+      })
+      updates.profilePic = uploadRes.secure_url
+    }
+
     if (updates.password) {
+      const bcrypt = await import("bcrypt")
       updates.passwordHash = await bcrypt.hash(updates.password, 10)
       delete updates.password
     }
 
-    const user = await User.findByIdAndUpdate(req.userId, updates, { new: true })
-    res.json(user)
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, {
+      new: true,
+    }).select("-passwordHash")
+
+    res.json(updatedUser)
   } catch (err) {
+    console.error("Profile update failed", err)
     res.status(500).json({ error: "Failed to update profile" })
   }
 }

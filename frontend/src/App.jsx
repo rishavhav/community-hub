@@ -9,10 +9,11 @@ import CourseDetails from "./Pages/CourseDetails"
 import CommunityPage from "./Pages/CommunityPage"
 import Login from "./Pages/Login"
 import Membership from "./Pages/Membership"
+import ChatPage from "./pages/ChatPage"
 
-import { useEffect } from "react"
+import ProtectedRoute from "./Components/ProtectedRoute"
+import Settings from "./Pages/Settings"
 
-// Component to wrap routes with layout
 function AppLayout() {
   const location = useLocation()
   const hideLayout = location.pathname === "/login" || location.pathname === "/checkout/founding-membership"
@@ -22,14 +23,59 @@ function AppLayout() {
       {!hideLayout && <Navbar />}
       <div style={{ display: "flex", flex: 1 }}>
         {!hideLayout && <Sidebar />}
-        <div style={{ flex: 1, overflowY: "auto" }} className="bg-black">
+        <div style={{ flex: 1, overflowY: "auto" }} className="bg-neutral-900">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/checkout/founding-membership" element={<Membership />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/course-details" element={<CourseDetails />} />
-            <Route path="/community" element={<CommunityPage />} />
+
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/courses"
+              element={
+                <ProtectedRoute>
+                  <Courses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/course-details"
+              element={
+                <ProtectedRoute>
+                  <CourseDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/community"
+              element={
+                <ProtectedRoute>
+                  <CommunityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </div>
       </div>

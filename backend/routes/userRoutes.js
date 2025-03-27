@@ -1,5 +1,5 @@
 import express from "express"
-import { loginUser, createUser, getMyProfile, updateMyProfile, deleteMyAccount } from "../controllers/userController.js"
+import { logoutUser, loginUser, createUser, getMyProfile, updateMyProfile, deleteMyAccount } from "../controllers/userController.js"
 import { protect } from "../middleware/authMiddleware.js"
 
 const router = express.Router()
@@ -9,5 +9,6 @@ router.get("/me", protect, getMyProfile)
 router.put("/me", protect, updateMyProfile)
 router.delete("/me", protect, deleteMyAccount)
 router.post("/login", loginUser)
+router.post("/logout", logoutUser)
 
 export default router
