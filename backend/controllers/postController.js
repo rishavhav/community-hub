@@ -1,5 +1,5 @@
 import Post from "../models/Post.js"
-import { v2 as cloudinary } from "cloudinary"
+import { uploadBase64Image } from "../utils/s3Upload.js"
 
 export const createPost = async (req, res) => {
   try {
@@ -12,10 +12,7 @@ export const createPost = async (req, res) => {
 
     let imageUrl = ""
     if (image) {
-      const uploadRes = await cloudinary.uploader.upload(image, {
-        folder: "community-posts",
-      })
-      imageUrl = uploadRes.secure_url
+      imageUrl = await uploadBase64Image(image, "community-posts")
     }
 
     const newPost = await Post.create({
@@ -26,7 +23,6 @@ export const createPost = async (req, res) => {
     })
 
     const populatedPost = await Post.findById(newPost._id).populate("author", "name profilePic")
-
     res.status(201).json(populatedPost)
   } catch (err) {
     console.error("Post creation error:", err)

@@ -103,3 +103,14 @@ export const deleteMyAccount = async (req, res) => {
     res.status(500).json({ error: "Failed to delete account" })
   }
 }
+
+// all users
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, "name email _id profilePic") // send basic info only
+    res.json(users)
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch users" })
+  }
+}

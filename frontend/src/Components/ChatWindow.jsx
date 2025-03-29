@@ -26,6 +26,28 @@ function ChatWindow() {
     }
   }, [user?.id])
 
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+
+    if (user?.id) {
+      socket.emit("join", user.id)
+
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chats/${adminId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then(setMessages)
+    }
+
+    socket.on("receiveMessage", (msg) => {
+      setMessages((prev) => [...prev, msg])
+    })
+
+    return () => {
+      socket.off("receiveMessage")
+    }
+  }, [user?.id])
+
   const sendMessage = () => {
     if (!input.trim()) return
 
@@ -42,7 +64,7 @@ function ChatWindow() {
 
   return (
     <div className="p-6 max-w-xl mx-auto text-white">
-      <h2 className="text-xl font-bold mb-4">Chat with Admin</h2>
+      <h2 className="text-xl font-bold mb-4">Chat with Oliviah Shaffer</h2>
       <div className="bg-neutral-700 p-4 rounded h-96 overflow-y-auto space-y-2">
         {messages.map((msg, i) => (
           <div key={i} className={msg.sender === user.id ? "text-right" : "text-left"}>

@@ -1,14 +1,21 @@
+// controllers/chatController.js
 import Message from "../models/Message.js"
 
+// 📥 Admin: Get all conversations grouped by user
 export const getChatsForAdmin = async (req, res) => {
   try {
-    const chats = await Message.find().populate("sender", "name email profilePic").sort("-createdAt")
+    const messages = await Message.find({
+      $or: [{ sender: req.userId }, { recipient: req.userId }],
+    })
+      .populate("sender", "name email profilePic")
+      .sort({ createdAt: 1 })
+
     const grouped = {}
 
-    chats.forEach((msg) => {
-      const senderId = msg.sender._id.toString()
-      if (!grouped[senderId]) grouped[senderId] = []
-      grouped[senderId].push(msg)
+    messages.forEach((msg) => {
+      const otherUserId = msg.sender._id.toString() === req.userId ? msg.recipient.toString() : msg.sender._id.toString()
+      if (!grouped[otherUserId]) grouped[otherUserId] = []
+      grouped[otherUserId].push(msg)
     })
 
     res.json(grouped)
@@ -17,13 +24,19 @@ export const getChatsForAdmin = async (req, res) => {
   }
 }
 
+// 💬 Admin: Get conversation with a specific user & mark unread as read
 export const getChatWithUser = async (req, res) => {
   try {
     const userId = req.params.userId
+    const adminId = req.userId
+
+    // Mark messages as read
+    await Message.updateMany({ sender: userId, recipient: adminId, read: false }, { $set: { read: true } })
+
     const messages = await Message.find({
       $or: [
-        { sender: userId, recipient: req.userId },
-        { sender: req.userId, recipient: userId },
+        { sender: userId, recipient: adminId },
+        { sender: adminId, recipient: userId },
       ],
     }).sort("createdAt")
 
