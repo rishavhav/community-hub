@@ -13,92 +13,107 @@ const PRICE_IDS = {
 
 function CheckoutForm({ selectedPlan }) {
   const API = import.meta.env.VITE_API_BASE_URL
-
-  const navigate = useNavigate()
-
   const stripe = useStripe()
   const elements = useElements()
-  const [name, setName] = useState("")
+  const navigate = useNavigate()
 
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [confirmEmail, setConfirmEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!agreed) return alert("Please agree to the terms.")
+    setError("")
+
+    if (!agreed) return setError("Please agree to the terms.")
+    if (email !== confirmEmail) return setError("Emails do not match.")
+    if (password !== confirmPassword) return setError("Passwords do not match.")
 
     setLoading(true)
 
-    const res = await fetch(`${API}/api/stripe/create-subscription`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, priceId: PRICE_IDS[selectedPlan] }),
-    })
-    const data = await res.json()
-
-    const result = await stripe.confirmCardPayment(data.clientSecret, {
-      payment_method: {
-        card: elements.getElement(CardElement),
-        billing_details: { email },
-      },
-    })
-
-    if (result.error) {
-      alert(result.error.message)
-    } else {
-      await fetch(`${API}/api/user/create`, {
+    try {
+      const res = await fetch(`${API}/api/stripe/create-subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          name,
-          password,
-          plan: selectedPlan,
-          stripeCustomerId: data.stripeCustomerId,
-        }),
+        body: JSON.stringify({ email, priceId: PRICE_IDS[selectedPlan] }),
+      })
+      const data = await res.json()
+
+      const result = await stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+          billing_details: { email },
+        },
       })
 
-      navigate("/login")
+      if (result.error) {
+        setError(result.error.message)
+      } else {
+        await fetch(`${API}/api/user/create`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            name,
+            password,
+            plan: selectedPlan,
+            stripeCustomerId: data.stripeCustomerId,
+          }),
+        })
+
+        navigate("/login")
+      }
+    } catch (err) {
+      console.error(err)
+      setError("Something went wrong. Please try again.")
     }
 
     setLoading(false)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name" className="w-full p-2 border rounded" />
+    <form onSubmit={handleSubmit} className="space-y-5 mt-6">
+      {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
 
-      <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 border rounded" placeholder="Email" />
-      <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border rounded" placeholder="Create password" />
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
+      <input type="email" value={confirmEmail} onChange={(e) => setConfirmEmail(e.target.value)} placeholder="Confirm Email" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
+
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create Password" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
+      <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
+
       <CardElement className="p-3 border rounded-md bg-white" />
 
-      <div className="flex items-start gap-2">
+      <div className="flex items-start gap-3">
         <input type="checkbox" required checked={agreed} onChange={() => setAgreed(!agreed)} />
-        <label className="text-sm">
+        <label className="text-sm text-gray-600">
           I agree to the{" "}
-          <a href="#" className="underline">
+          <a href="#" className="underline text-blue-600">
             terms of service
           </a>{" "}
           and have read the{" "}
-          <a href="#" className="underline">
+          <a href="#" className="underline text-blue-600">
             privacy policy
           </a>
           .
         </label>
       </div>
 
-      <button type="submit" disabled={!stripe || loading} className="bg-black text-white w-full py-2 rounded hover:bg-gray-800">
+      <button type="submit" disabled={!stripe || loading} className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition">
         {loading ? "Processing..." : "Subscribe"}
       </button>
 
-      {/* Order Summary */}
-      <div className="mt-6 border-t pt-4 text-sm text-gray-600 space-y-1">
-        <p className="font-semibold">Order Summary</p>
+      <div className="bg-white border border-gray-200 rounded-lg p-4 mt-6 text-sm space-y-1 shadow-sm">
+        <p className="font-semibold text-gray-800">Order Summary</p>
         <p>Today's Payment: {selectedPlan === "monthly" ? "$127 USD" : selectedPlan === "annual" ? "$1250 USD" : "$4997 USD"}</p>
         <p>Future Payments: {selectedPlan === "monthly" ? "$127 USD / month" : selectedPlan === "annual" ? "$1250 USD / year" : "$1250 USD / year (after 1 year)"}</p>
-        <p>Total due today: {selectedPlan === "monthly" ? "$127 USD" : selectedPlan === "annual" ? "$1250 USD" : "$4997 USD"}</p>
+        <p className="font-medium text-gray-900">Total Due Today: {selectedPlan === "monthly" ? "$127" : selectedPlan === "annual" ? "$1250" : "$4997"}</p>
       </div>
     </form>
   )
@@ -108,52 +123,54 @@ function Membership() {
   const [selectedPlan, setSelectedPlan] = useState("monthly")
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       {/* Left */}
-      <div className="md:w-1/2 p-10 bg-white text-black">
-        <h1 className="text-3xl font-bold text-green-900">SOOTHE WELLNESS MEMBERSHIP</h1>
-        <p className="mt-4 mb-6">Choose your subscription plan:</p>
+      <div className="p-10 bg-white text-black">
+        <h1 className="text-3xl font-bold text-green-800">SOOTHE WELLNESS MEMBERSHIP</h1>
+        <p className="mt-4 mb-6 text-gray-600">Choose your subscription plan:</p>
 
-        <div className="flex flex-col gap-3 mb-8">
-          <button onClick={() => setSelectedPlan("monthly")} className={`px-4 py-2 border rounded ${selectedPlan === "monthly" ? "bg-black text-white" : "bg-white text-black"}`}>
+        <div className="grid grid-cols-1 gap-3">
+          <button onClick={() => setSelectedPlan("monthly")} className={`px-5 py-3 rounded-lg border transition ${selectedPlan === "monthly" ? "bg-black text-white" : "bg-white text-black"}`}>
             Monthly - $127
           </button>
 
-          <button onClick={() => setSelectedPlan("annual")} className={`px-4 py-2 border rounded ${selectedPlan === "annual" ? "bg-black text-white" : "bg-white text-black"}`}>
+          <button onClick={() => setSelectedPlan("annual")} className={`px-5 py-3 rounded-lg border transition ${selectedPlan === "annual" ? "bg-black text-white" : "bg-white text-black"}`}>
             Annual - $1250
           </button>
 
-          <button onClick={() => setSelectedPlan("gold")} className={`px-4 py-2 border-2 border-yellow-500 rounded font-semibold shadow ${selectedPlan === "gold" ? "bg-yellow-500 text-white" : "bg-white text-yellow-600"}`}>
+          <button onClick={() => setSelectedPlan("gold")} className={`px-5 py-3 rounded-lg border-2 transition shadow ${selectedPlan === "gold" ? "bg-yellow-500 text-white border-yellow-500" : "bg-white text-yellow-600 border-yellow-500"}`}>
             GOLD - $4997 (Annual + VIP Benefits)
           </button>
         </div>
 
-        {selectedPlan === "gold" ? (
-          <>
-            <p className="text-sm text-yellow-700 font-semibold">🔥 GOLD MEMBERSHIP INCLUDES:</p>
-            <ul className="text-sm mt-2 space-y-1">
-              <li>- Everything in standard membership</li>
-              <li>- 6 one-to-one healing sessions</li>
-            </ul>
-          </>
-        ) : (
-          <>
-            <p className="text-sm text-gray-600">Included in your plan:</p>
-            <ul className="text-sm mt-2 space-y-1">
-              <li>- Weekly teachings & practices</li>
-              <li>- Vault access</li>
-              <li>- Monthly community calls</li>
-              <li>- Member perks</li>
-            </ul>
-          </>
-        )}
+        <div className="mt-6">
+          {selectedPlan === "gold" ? (
+            <>
+              <p className="text-sm font-semibold text-yellow-700">🔥 GOLD MEMBERSHIP INCLUDES:</p>
+              <ul className="text-sm mt-2 space-y-1 list-disc list-inside text-gray-700">
+                <li>Everything in standard membership</li>
+                <li>6 one-to-one healing sessions</li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-gray-600">Included in your plan:</p>
+              <ul className="text-sm mt-2 space-y-1 list-disc list-inside text-gray-700">
+                <li>Weekly teachings & practices</li>
+                <li>Vault access</li>
+                <li>Monthly community calls</li>
+                <li>Member perks</li>
+              </ul>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Right */}
-      <div className="md:w-1/2 p-10 bg-gray-50">
-        <h2 className="text-xl font-semibold mb-4">Payment Details</h2>
-        <p className="mb-2 text-sm text-gray-600">
-          Selected Plan: <strong>{selectedPlan === "monthly" ? "$127 / month" : selectedPlan === "annual" ? "$1250 / year" : "$4997 one-time + $1250/year"}</strong>
+      <div className="p-10 bg-gray-50">
+        <h2 className="text-2xl font-semibold mb-4">Payment Details</h2>
+        <p className="text-gray-600 mb-3">
+          Selected Plan: <span className="font-medium text-gray-800">{selectedPlan === "monthly" ? "$127 / month" : selectedPlan === "annual" ? "$1250 / year" : "$4997 one-time + $1250/year"}</span>
         </p>
 
         <Elements stripe={stripePromise}>
