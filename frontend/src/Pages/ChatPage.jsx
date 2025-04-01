@@ -1,5 +1,5 @@
 import React from "react"
-import ChatWindow from "../components/ChatWindow"
+import ChatWindow from "../Components/ChatWindow"
 import AdminChatPanel from "../Components/AdminChatPanel"
 
 const token = localStorage.getItem("token")
