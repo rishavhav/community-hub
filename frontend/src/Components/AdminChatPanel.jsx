@@ -48,11 +48,16 @@ function AdminChatPanel() {
     return () => socket.off("receiveMessage", handleReceive)
   }, [])
 
-  const handleMessagesRead = (userId, updatedMessages) => {
-    setConversations((prev) => ({
-      ...prev,
-      [userId]: updatedMessages,
-    }))
+  const handleMessagesRead = async (userId) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chats/admin`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const updated = await res.json()
+      setConversations(updated)
+    } catch (err) {
+      console.error("❌ Failed to refresh chats:", err)
+    }
   }
 
   const filteredUsers = allUsers.filter((user) => user.name.toLowerCase().includes(search.toLowerCase()))

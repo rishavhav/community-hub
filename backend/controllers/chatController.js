@@ -7,13 +7,14 @@ export const getChatsForAdmin = async (req, res) => {
     const messages = await Message.find({
       $or: [{ sender: req.userId }, { recipient: req.userId }],
     })
-      .populate("sender", "name email profilePic")
       .sort({ createdAt: 1 })
+      .lean()
 
     const grouped = {}
 
     messages.forEach((msg) => {
-      const otherUserId = msg.sender._id.toString() === req.userId ? msg.recipient.toString() : msg.sender._id.toString()
+      const otherUserId = msg.sender.toString() === req.userId ? msg.recipient.toString() : msg.sender.toString()
+
       if (!grouped[otherUserId]) grouped[otherUserId] = []
       grouped[otherUserId].push(msg)
     })

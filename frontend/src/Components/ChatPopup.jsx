@@ -12,20 +12,29 @@ function ChatPopup({ userId, user, onClose, onMessagesRead }) {
   const adminId = decoded?.id
 
   useEffect(() => {
+    // Join user's room so admin can receive their messages live
+    socket.emit("join", userId)
+    socket.emit("markRead", { adminId, userId })
+  }, [userId])
+
+  useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chats/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((msgs) => {
         setMessages(msgs)
-        if (onMessagesRead) onMessagesRead(userId, msgs)
+        if (onMessagesRead) onMessagesRead(userId)
       })
   }, [userId])
 
   useEffect(() => {
     const handleReceive = (msg) => {
       if (msg.sender === userId || msg.recipient === userId) {
-        setMessages((prev) => [...prev, msg])
+        setMessages((prev) => {
+          const exists = prev.some((m) => m._id === msg._id)
+          return exists ? prev : [...prev, msg]
+        })
       }
     }
 
@@ -48,7 +57,7 @@ function ChatPopup({ userId, user, onClose, onMessagesRead }) {
     }
 
     socket.emit("sendMessage", msg)
-    setMessages((prev) => [...prev, msg])
+
     setInput("")
   }
 
@@ -59,7 +68,6 @@ function ChatPopup({ userId, user, onClose, onMessagesRead }) {
           ×
         </button>
 
-        {/* User Info */}
         <div className="flex items-center mb-4 gap-3">
           <img src={user?.profilePic || "/avatar1.jpg"} alt="User" className="w-8 h-8 rounded-full object-cover" />
           <h3 className="text-lg font-semibold">{user?.name || "User"}</h3>
@@ -67,14 +75,23 @@ function ChatPopup({ userId, user, onClose, onMessagesRead }) {
 
         <div id="chat-scroll" className="flex-1 space-y-2 overflow-y-auto mb-4 pr-2">
           {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.sender === userId ? "justify-start" : "justify-end"}`}>
+            <div key={msg._id || i} className={`flex ${msg.sender === userId ? "justify-start" : "justify-end"}`}>
               <span className="inline-block px-3 py-1 bg-blue-500 rounded max-w-[75%] break-words">{msg.content}</span>
             </div>
           ))}
         </div>
 
         <div className="mt-2 flex">
-          <input className="flex-1 p-2 bg-neutral-600 rounded-l" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." />
+          <input
+            className="flex-1 p-2 bg-neutral-600 rounded-l"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") sendMessage()
+            }}
+            placeholder="Type your message..."
+          />
+
           <button onClick={sendMessage} className="bg-blue-600 px-4 py-2 rounded-r hover:bg-blue-700 transition">
             Send
           </button>
