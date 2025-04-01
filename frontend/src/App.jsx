@@ -9,7 +9,7 @@ import CourseDetails from "./Pages/CourseDetails"
 import CommunityPage from "./Pages/CommunityPage"
 import Login from "./Pages/Login"
 import Membership from "./Pages/Membership"
-import ChatPage from "./pages/ChatPage"
+import ChatPage from "./Pages/ChatPage"
 
 import ProtectedRoute from "./Components/ProtectedRoute"
 import Settings from "./Pages/Settings"
