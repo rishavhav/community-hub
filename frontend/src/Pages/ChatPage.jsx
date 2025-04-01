@@ -1,6 +1,6 @@
 import React from "react"
-import ChatWindow from "../Components/ChatWindow"
-import AdminChatPanel from "../Components/AdminChatPanel"
+import ChatWindow from "../components/ChatWindow"
+import AdminChatPanel from "../components/AdminChatPanel"
 
 const token = localStorage.getItem("token")
 const decoded = token && JSON.parse(atob(token.split(".")[1]))
