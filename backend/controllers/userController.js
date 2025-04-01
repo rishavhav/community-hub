@@ -108,7 +108,11 @@ export const deleteMyAccount = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "name email _id profilePic") // send basic info only
+    const search = req.query.search || ""
+    const regex = new RegExp(search, "i") // case-insensitive
+
+    const users = await User.find({ name: { $regex: regex } }, "name email _id profilePic")
+
     res.json(users)
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch users" })

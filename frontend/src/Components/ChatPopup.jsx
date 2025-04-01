@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react"
 import io from "socket.io-client"
+import dayjs from "dayjs"
+import isToday from "dayjs/plugin/isToday"
+
+dayjs.extend(isToday)
 
 const socket = io(import.meta.env.VITE_API_BASE_URL)
 
@@ -12,7 +16,6 @@ function ChatPopup({ userId, user, onClose, onMessagesRead }) {
   const adminId = decoded?.id
 
   useEffect(() => {
-    // Join user's room so admin can receive their messages live
     socket.emit("join", userId)
     socket.emit("markRead", { adminId, userId })
   }, [userId])
@@ -57,9 +60,20 @@ function ChatPopup({ userId, user, onClose, onMessagesRead }) {
     }
 
     socket.emit("sendMessage", msg)
-
     setInput("")
   }
+
+  const groupMessagesByDate = (msgs) => {
+    const groups = {}
+    msgs.forEach((msg) => {
+      const dateKey = dayjs(msg.createdAt).format("YYYY-MM-DD")
+      if (!groups[dateKey]) groups[dateKey] = []
+      groups[dateKey].push(msg)
+    })
+    return groups
+  }
+
+  const groupedMessages = groupMessagesByDate(messages)
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
@@ -73,10 +87,25 @@ function ChatPopup({ userId, user, onClose, onMessagesRead }) {
           <h3 className="text-lg font-semibold">{user?.name || "User"}</h3>
         </div>
 
-        <div id="chat-scroll" className="flex-1 space-y-2 overflow-y-auto mb-4 pr-2">
-          {messages.map((msg, i) => (
-            <div key={msg._id || i} className={`flex ${msg.sender === userId ? "justify-start" : "justify-end"}`}>
-              <span className="inline-block px-3 py-1 bg-blue-500 rounded max-w-[75%] break-words">{msg.content}</span>
+        <div id="chat-scroll" className="flex-1 space-y-6 overflow-y-auto mb-4 pr-2">
+          {Object.entries(groupedMessages).map(([date, msgs]) => (
+            <div key={date}>
+              <div className="text-center text-gray-400 text-sm mb-2">{dayjs(date).isToday() ? "Today" : dayjs(date).format("MMMM D, YYYY")}</div>
+              {msgs.map((msg, i) => {
+                const isUser = msg.sender === userId
+                const time = dayjs(msg.createdAt).format("hh:mm A")
+
+                return (
+                  <div key={msg._id || i} className={`flex ${isUser ? "justify-start" : "justify-end"}`}>
+                    <div className="max-w-[75%]">
+                      <div className={`inline-block px-3 py-2 rounded-xl ${isUser ? "bg-gray-600 text-white rounded-bl-none" : "bg-blue-600 text-white rounded-br-none"}`}>
+                        <span className="text-sm">{msg.content}</span>
+                      </div>
+                      <div className={`text-xs text-gray-400 mt-1 ${isUser ? "text-left" : "text-right"}`}>{time}</div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           ))}
         </div>
