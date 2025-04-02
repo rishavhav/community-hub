@@ -36,13 +36,15 @@ function Navbar({ onMenuClick }) {
     <nav className="z-10 relative bg-black border-gray-200 px-4 md:px-20">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <div className="flex items-center space-x-3">
-          <button className="md:hidden" onClick={onMenuClick}>
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          {/* Hamburger */}
+          <button onClick={onMenuClick} className="md:hidden p-2 border border-gray-600 rounded bg-neutral-800 hover:bg-neutral-700">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
+
           <a href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-            <img src="/logo.png" className="h-10 scale-180" alt="Logo" />
+            <img src="/logo.png" alt="Logo" className="h-8 md:h-16 w-auto max-w-[180px] object-contain" />
           </a>
         </div>
 
