@@ -24,7 +24,7 @@ function Sidebar({ isOpen, onClose }) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden md:block h-full p-3 space-y-2 w-60 bg-neutral-900 text-white flex-shrink-0">
+      <div className="hidden md:block h-full p-3 space-y-2 w-60  text-white flex-shrink-0">
         <div className="divide-y divide-gray-700">
           <ul className="pt-2 pb-4 space-y-1 text-sm">
             <NavLink path="/" label="Events" />

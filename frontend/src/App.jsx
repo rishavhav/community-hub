@@ -19,11 +19,11 @@ function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex flex-col">
       {!hideLayout && <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />}
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {!hideLayout && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
-        <div className="flex-1 overflow-y-auto bg-neutral-900">
+        <div className="flex-1 overflow-y-auto px-4 py-6">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/checkout/founding-membership" element={<Membership />} />

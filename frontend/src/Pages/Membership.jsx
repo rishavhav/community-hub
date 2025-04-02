@@ -105,6 +105,8 @@ function CheckoutForm({ selectedPlan }) {
         </label>
       </div>
 
+      <p className="text-sm text-gray-600 italic">Please remember your email and password — you'll need them to log in after payment.</p>
+
       <button type="submit" disabled={!stripe || loading} className="w-full bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white font-semibold py-2 rounded-xl shadow-lg transition-all duration-300">
         {loading ? "Processing..." : "Subscribe"}
       </button>

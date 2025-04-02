@@ -128,7 +128,7 @@ function Home() {
   }
 
   return (
-    <div className="bg-neutral-900 text-white min-h-screen px-6 md:px-20 py-12">
+    <div className=" text-white min-h-screen px-6 md:px-20 py-12">
       {isAdmin && (
         <div className="flex justify-between mb-8">
           <h1 className="text-3xl font-bold">Events</h1>
