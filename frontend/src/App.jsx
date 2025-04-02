@@ -18,12 +18,17 @@ function AppLayout() {
   const hideLayout = location.pathname === "/login" || location.pathname === "/checkout/founding-membership"
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  // Apply dark background only if layout is shown
+  const containerClasses = hideLayout ? "min-h-screen flex flex-col" : "min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex flex-col"
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex flex-col">
+    <div className={containerClasses}>
       {!hideLayout && <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />}
+
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
         {!hideLayout && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
+
+        <div className={`flex-1 overflow-y-auto ${hideLayout ? "" : "px-4 py-6"}`}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/checkout/founding-membership" element={<Membership />} />
