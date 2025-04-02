@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
 import "./App.css"
 import Home from "./Pages/Home"
@@ -10,24 +10,23 @@ import CommunityPage from "./Pages/CommunityPage"
 import Login from "./Pages/Login"
 import Membership from "./Pages/Membership"
 import ChatPage from "./Pages/ChatPage"
-
 import ProtectedRoute from "./Components/ProtectedRoute"
 import Settings from "./Pages/Settings"
 
 function AppLayout() {
   const location = useLocation()
   const hideLayout = location.pathname === "/login" || location.pathname === "/checkout/founding-membership"
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      {!hideLayout && <Navbar />}
-      <div style={{ display: "flex", flex: 1 }}>
-        {!hideLayout && <Sidebar />}
-        <div style={{ flex: 1, overflowY: "auto" }} className="bg-neutral-900">
+    <div className="flex flex-col h-screen">
+      {!hideLayout && <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />}
+      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
+        {!hideLayout && <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />}
+        <div className="flex-1 overflow-y-auto bg-neutral-900">
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/checkout/founding-membership" element={<Membership />} />
-
             <Route
               path="/"
               element={
