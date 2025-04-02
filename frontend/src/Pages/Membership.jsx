@@ -88,7 +88,7 @@ function CheckoutForm({ selectedPlan }) {
       <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create Password" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
       <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
 
-      <CardElement className="p-3 border rounded-md bg-white" />
+      <CardElement className="p-4 border rounded-xl bg-gray-100 shadow-inner focus:outline-none" />
 
       <div className="flex items-start gap-3">
         <input type="checkbox" required checked={agreed} onChange={() => setAgreed(!agreed)} />
@@ -105,11 +105,11 @@ function CheckoutForm({ selectedPlan }) {
         </label>
       </div>
 
-      <button type="submit" disabled={!stripe || loading} className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition">
+      <button type="submit" disabled={!stripe || loading} className="w-full bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white font-semibold py-2 rounded-xl shadow-lg transition-all duration-300">
         {loading ? "Processing..." : "Subscribe"}
       </button>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-4 mt-6 text-sm space-y-1 shadow-sm">
+      <div className="bg-gradient-to-r from-white to-gray-50 border border-gray-200 rounded-xl p-5 mt-6 text-sm space-y-1 shadow-md">
         <p className="font-semibold text-gray-800">Order Summary</p>
         <p>Today's Payment: {selectedPlan === "monthly" ? "$127 USD" : selectedPlan === "annual" ? "$1250 USD" : "$4997 USD"}</p>
         <p>Future Payments: {selectedPlan === "monthly" ? "$127 USD / month" : selectedPlan === "annual" ? "$1250 USD / year" : "$1250 USD / year (after 1 year)"}</p>
@@ -125,37 +125,42 @@ function Membership() {
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
       {/* Left */}
-      <div className="p-10 bg-white text-black">
-        <h1 className="text-3xl font-bold text-green-800">SOOTHE WELLNESS MEMBERSHIP</h1>
-        <p className="mt-4 mb-6 text-gray-600">Choose your subscription plan:</p>
+      <div className="p-10 bg-gradient-to-br from-green-100 via-green-200 to-green-300 text-black">
+        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-800 via-emerald-500 to-lime-500 animate-text-shimmer flex items-center gap-2">
+          <span className="text-yellow-400">✨</span>
+          SOOTHE WELLNESS MEMBERSHIP
+        </h1>
+
+        <p className="mt-4 mb-6 text-gray-700">Choose your subscription plan:</p>
 
         <div className="grid grid-cols-1 gap-3">
-          <button onClick={() => setSelectedPlan("monthly")} className={`px-5 py-3 rounded-lg border transition ${selectedPlan === "monthly" ? "bg-black text-white" : "bg-white text-black"}`}>
+          <button onClick={() => setSelectedPlan("monthly")} className={`px-5 py-3 rounded-lg border transition duration-300 ease-in-out ${selectedPlan === "monthly" ? "bg-gradient-to-r from-black to-gray-800 text-white shadow-md" : "bg-white text-black hover:bg-gray-100"}`}>
             Monthly - $127
           </button>
 
-          <button onClick={() => setSelectedPlan("annual")} className={`px-5 py-3 rounded-lg border transition ${selectedPlan === "annual" ? "bg-black text-white" : "bg-white text-black"}`}>
+          <button onClick={() => setSelectedPlan("annual")} className={`px-5 py-3 rounded-lg border transition duration-300 ease-in-out ${selectedPlan === "annual" ? "bg-gradient-to-r from-black to-gray-800 text-white shadow-md" : "bg-white text-black hover:bg-gray-100"}`}>
             Annual - $1250
           </button>
 
-          <button onClick={() => setSelectedPlan("gold")} className={`px-5 py-3 rounded-lg border-2 transition shadow ${selectedPlan === "gold" ? "bg-yellow-500 text-white border-yellow-500" : "bg-white text-yellow-600 border-yellow-500"}`}>
+          <button onClick={() => setSelectedPlan("gold")} className={`px-5 py-3 rounded-lg border-2 transition duration-300 ease-in-out ${selectedPlan === "gold" ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black border-yellow-500 shadow-md" : "bg-white text-yellow-600 border-yellow-500 hover:bg-yellow-50"}`}>
             GOLD - $4997 (Annual + VIP Benefits)
+            <span className="inline-block bg-yellow-300 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full ml-2">Popular</span>
           </button>
         </div>
 
         <div className="mt-6">
           {selectedPlan === "gold" ? (
             <>
-              <p className="text-sm font-semibold text-yellow-700">🔥 GOLD MEMBERSHIP INCLUDES:</p>
-              <ul className="text-sm mt-2 space-y-1 list-disc list-inside text-gray-700">
+              <p className="text-sm font-semibold text-yellow-800">🔥 GOLD MEMBERSHIP INCLUDES:</p>
+              <ul className="text-sm mt-2 space-y-1 list-disc list-inside text-gray-800">
                 <li>Everything in standard membership</li>
                 <li>6 one-to-one healing sessions</li>
               </ul>
             </>
           ) : (
             <>
-              <p className="text-sm font-semibold text-gray-600">Included in your plan:</p>
-              <ul className="text-sm mt-2 space-y-1 list-disc list-inside text-gray-700">
+              <p className="text-sm font-semibold text-gray-800">Included in your plan:</p>
+              <ul className="text-sm mt-2 space-y-1 list-disc list-inside text-gray-800">
                 <li>Weekly teachings & practices</li>
                 <li>Vault access</li>
                 <li>Monthly community calls</li>
