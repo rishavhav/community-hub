@@ -1,7 +1,10 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useSetRecoilState } from "recoil"
+import { authViewState } from "../recoil/authViewAtom"
 
 function Login() {
+  const setAuthView = useSetRecoilState(authViewState)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -48,6 +51,13 @@ function Login() {
           <div className="space-y-4">
             <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full p-3 rounded-xl bg-neutral-800/80 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
             <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full p-3 rounded-xl bg-neutral-800/80 placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition" />
+
+            {/* Forgot Password Button */}
+            <div className="text-left">
+              <button type="button" onClick={() => setAuthView("forgot")} className="text-sm text-blue-400 hover:underline mt-1">
+                Forgot password?
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition duration-300 rounded-xl p-3 font-semibold text-white shadow-md hover:shadow-lg">

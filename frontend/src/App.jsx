@@ -7,7 +7,7 @@ import Sidebar from "./Components/Sidebar"
 import Courses from "./Pages/Courses"
 import CourseDetails from "./Pages/CourseDetails"
 import CommunityPage from "./Pages/CommunityPage"
-import Login from "./Pages/Login"
+import LoginPage from "./Pages/LoginPage"
 import Membership from "./Pages/Membership"
 import ChatPage from "./Pages/ChatPage"
 import ProtectedRoute from "./Components/ProtectedRoute"
@@ -30,7 +30,7 @@ function AppLayout() {
 
         <div className={`flex-1 overflow-y-auto ${hideLayout ? "" : "px-4 py-6"}`}>
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/checkout/founding-membership" element={<Membership />} />
             <Route
               path="/"

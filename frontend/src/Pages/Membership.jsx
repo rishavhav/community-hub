@@ -142,11 +142,11 @@ function Membership() {
 
           <button onClick={() => setSelectedPlan("annual")} className={`px-5 py-3 rounded-lg border transition duration-300 ease-in-out ${selectedPlan === "annual" ? "bg-gradient-to-r from-black to-gray-800 text-white shadow-md" : "bg-white text-black hover:bg-gray-100"}`}>
             Annual - $1250
+            <span className="inline-block bg-yellow-300 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full ml-2">Popular</span>
           </button>
 
           <button onClick={() => setSelectedPlan("gold")} className={`px-5 py-3 rounded-lg border-2 transition duration-300 ease-in-out ${selectedPlan === "gold" ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black border-yellow-500 shadow-md" : "bg-white text-yellow-600 border-yellow-500 hover:bg-yellow-50"}`}>
             GOLD - $4997 (Annual + VIP Benefits)
-            <span className="inline-block bg-yellow-300 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full ml-2">Popular</span>
           </button>
         </div>
 
