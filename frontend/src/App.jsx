@@ -12,6 +12,7 @@ import Membership from "./Pages/Membership"
 import ChatPage from "./Pages/ChatPage"
 import ProtectedRoute from "./Components/ProtectedRoute"
 import Settings from "./Pages/Settings"
+import CreateUser from "./Pages/CreateUser"
 
 function AppLayout() {
   const location = useLocation()
@@ -77,6 +78,14 @@ function AppLayout() {
               element={
                 <ProtectedRoute>
                   <ChatPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create-user"
+              element={
+                <ProtectedRoute>
+                  <CreateUser />
                 </ProtectedRoute>
               }
             />
