@@ -1,5 +1,5 @@
 import React from "react"
-import CourseCard from "../Components/CourseCard"
+import CourseCard from "../components/CourseCard"
 
 function Courses() {
   return (
