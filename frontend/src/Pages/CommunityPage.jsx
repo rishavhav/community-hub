@@ -1,9 +1,9 @@
 // src/pages/CommunityPage.jsx
 import React, { useState, useEffect } from "react"
-import ChannelList from "../components/ChannelList"
-import ChannelForm from "../components/ChannelForm"
-import PostForm from "../components/PostForm"
-import Post from "../components/Post"
+import ChannelList from "../components/ChannelList.jsx"
+import ChannelForm from "../components/ChannelForm.jsx"
+import PostForm from "../components/PostForm.jsx"
+import Post from "../components/Post.jsx"
 import { jwtDecode } from "jwt-decode"
 
 const API = import.meta.env.VITE_API_BASE_URL

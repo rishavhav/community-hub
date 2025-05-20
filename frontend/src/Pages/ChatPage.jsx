@@ -1,5 +1,5 @@
-import ChatWindow from "../components/ChatWindow"
-import AdminChatPanel from "../components/AdminChatPanel"
+import ChatWindow from "../components/ChatWindow.jsx"
+import AdminChatPanel from "../components/AdminChatPanel.jsx"
 
 const token = localStorage.getItem("token")
 const decoded = token && JSON.parse(atob(token.split(".")[1]))
